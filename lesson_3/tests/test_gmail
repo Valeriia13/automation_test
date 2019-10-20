@@ -1,0 +1,51 @@
+from selenium import webdriver
+import time
+
+# set up driver
+driver = webdriver.Chrome('C:/Users/Валерия/Desktop/chromedriver.exe')
+driver.implicitly_wait(10)
+google_accounts_page = "https://accounts.google.com"
+already_login_url = "myaccount"
+driver.get(google_accounts_page)
+
+if already_login_url in driver.current_url:
+    raise Exception('Need to log out to start testing')
+
+# set up Sign in page
+from pages.sign_in_page import SignIn
+signin_page = SignIn(driver)
+
+# set up Create Account page
+from pages.create_account_page import CreateAccount
+create_account_page = CreateAccount(driver)
+
+# define variables
+name = {"firstname": "Valeriia", "lastname": "Sheiko"}
+password = "mypassworD1234"
+confirm_password = "mypassworD1234"
+invalid_usernames = {"me@", "me@", "@example.com", "me.@example.com", "valeria13", "checkemail", "testemail", ""}
+
+# expected error messages
+invalid_error_message = "Имя пользователя может включать латинские буквы (a-z), цифры (0-9) и точку (.)."
+not_unique_error_message = "Это имя пользователя уже занято. Попробуйте другое."
+empty_error_message = "Укажите адрес Gmail"
+
+# start test
+signin_page.create_account()
+time.sleep(1)
+signin_page.create_account_for_you()
+
+# validate email input field invalid values
+for invalid_username in invalid_usernames:
+    create_account_page.enter_firstname(name["firstname"])
+    create_account_page.enter_lastname(name["lastname"])
+    create_account_page.enter_username(invalid_username)
+    create_account_page.enter_password(password)
+    create_account_page.enter_confirmpassword(confirm_password)
+    create_account_page.click_next()
+
+    time.sleep(1)
+    assert invalid_error_message or not_unique_error_message or empty_error_message in driver.page_source
+
+driver.quit()
+
