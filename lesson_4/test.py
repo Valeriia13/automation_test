@@ -9,6 +9,8 @@ instagram_page = "https://www.instagram.com/accounts/login/"
 username = "valeria13_sh"
 password = "tbc"
 keywords = {"fitness"}
+tag_to_find = "Подписаться"
+text_to_find = "Подписаться"
 
 # set up driver
 driver = webdriver.Chrome("C:/Users/Валерия/Desktop/chromedriver.exe")
@@ -29,6 +31,6 @@ for keyword_for_search in keywords:
 
     search_page = SearchResult(driver)
     time.sleep(5)
-    assert "Подписаться" in search_page.get_button_text("Подписаться")
+    assert tag_to_find in search_page.get_button_text(text_to_find)
 
 driver.quit()
